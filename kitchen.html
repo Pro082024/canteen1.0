@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Παραγγελίες Κουζίνας</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        .order {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        .order h2 {
+            margin-top: 0;
+        }
+        .order button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .order button:hover {
+            background-color: #45a049;
+        }
+		
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #printSection, #printSection * {
+        visibility: visible;
+    }
+    #printSection {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    @page {
+        size: auto;
+        margin: 0mm;
+    }
+    #printSection {
+        padding: 10mm;
+    }
+}
+
+ .back-button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        border-radius: 3px;
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .back-button:hover {
+        background-color: #45a049;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Παραγγελίες Κουζίνας</h1>
+        <button class="back-button" onclick="window.location.href='kitchen-options.html'">Επιστροφή στην Αρχική</button>
+    </div>
+    
+    <div class="controls">
+        <label for="sortOrder">Ταξινόμηση:</label>
+        <select id="sortOrder" onchange="loadOrders()">
+            <option value="newest">Νεότερες πρώτα</option>
+            <option value="oldest">Παλαιότερες πρώτα</option>
+        </select>
+    </div>
+
+    <div id="ordersList"></div>
+
+    <audio id="newOrderSound" src="https://example.com/path/to/notification-sound.mp3"></audio>
+
+
+    <script>
+        let lastOrderCount = 0;
+
+    function loadOrders() {
+    const ordersList = document.getElementById('ordersList');
+    ordersList.innerHTML = '';
+    let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+
+    const sortOrder = document.getElementById('sortOrder').value;
+
+    // Ταξινόμηση παραγγελιών
+    orders.sort((a, b) => {
+        if (sortOrder === 'newest') {
+            return b.id - a.id;
+        } else {
+            return a.id - b.id;
+        }
+    });
+
+    if (orders.length > lastOrderCount) {
+        playNewOrderSound();
+    }
+    lastOrderCount = orders.length;
+
+    orders.forEach(order => {
+        const orderDiv = document.createElement('div');
+        orderDiv.className = 'order';
+        orderDiv.innerHTML = `
+            <h2>Παραγγελία για: ${order.customerName}</h2>
+            <p>Σερβιτόρος: ${order.waiter}</p>
+            <p>Ώρα: ${order.timestamp}</p>
+            <ul>
+                ${order.items.map(item => `
+                    <li>
+                        ${item.quantity} x ${item.name} - €${item.totalPrice.toFixed(2)}
+                        ${Object.entries(item.selectedOptions).map(([category, options]) => 
+                            options.length > 0 ? `<br>${category}: ${options.join(', ')}` : ''
+                        ).join('')}
+                        ${item.comment ? `<br>Σχόλιο: ${item.comment}` : ''}
+                    </li>
+                `).join('')}
+            </ul>
+            <p>Σύνολο: €${order.total.toFixed(2)}</p>
+            ${order.comment ? `<p>Γενικό Σχόλιο: ${order.comment}</p>` : ''}
+            <p>Τρόπος Πληρωμής: ${order.paymentMethod === 'cash' ? 'Μετρητά' : 'Κάρτα'}</p>
+            <button onclick="confirmPrintOrder(${order.id})">Εκτύπωση</button>
+        `;
+        ordersList.appendChild(orderDiv);
+    });
+}
+
+
+        function printOrder(orderId) {
+    let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    const orderToPrint = orders.find(order => order.id === orderId);
+
+    if (orderToPrint) {
+        // Δημιουργία του περιεχομένου εκτύπωσης
+        const printContent = `
+            <div id="printSection">
+                <h1>Παραγγελία για: ${orderToPrint.customerName}</h1>
+                <p>Σερβιτόρος: ${orderToPrint.waiter}</p>
+                <p>Ώρα: ${orderToPrint.timestamp}</p>
+                <ul>
+                    ${orderToPrint.items.map(item => `
+                        <li>
+                            ${item.quantity} x ${item.name} - €${item.totalPrice.toFixed(2)}
+                            ${Object.entries(item.selectedOptions).map(([category, options]) => 
+                                options.length > 0 ? `<br>${category}: ${options.join(', ')}` : ''
+                            ).join('')}
+                            ${item.comment ? `<br>Σχόλιο: ${item.comment}` : ''}
+                        </li>
+                    `).join('')}
+                </ul>
+                <p>Σύνολο: €${orderToPrint.total.toFixed(2)}</p>
+                ${orderToPrint.comment ? `<p>Γενικό Σχόλιο: ${orderToPrint.comment}</p>` : ''}
+                <p>Τρόπος Πληρωμής: ${orderToPrint.paymentMethod === 'cash' ? 'Μετρητά' : 'Κάρτα'}</p>
+            </div>
+        `;
+
+        // Προσθήκη του περιεχομένου εκτύπωσης στη σελίδα
+        const printDiv = document.createElement('div');
+        printDiv.innerHTML = printContent;
+        document.body.appendChild(printDiv);
+
+        // Εκτύπωση
+        window.print();
+
+        // Αφαίρεση του περιεχομένου εκτύπωσης από τη σελίδα
+        document.body.removeChild(printDiv);
+
+        // Διαγραφή της παραγγελίας
+        orders = orders.filter(order => order.id !== orderId);
+        localStorage.setItem('orders', JSON.stringify(orders));
+        loadOrders();
+    }
+}
+
+function confirmPrintOrder(orderId) {
+    if (confirm('Είστε σίγουροι ότι θέλετε να εκτυπώσετε και να διαγράψετε αυτή την παραγγελία;')) {
+        printOrder(orderId);
+    }
+}
+
+
+
+        function playNewOrderSound() {
+            const audio = document.getElementById('newOrderSound');
+            audio.play();
+        }
+
+        // Φόρτωση παραγγελιών κατά την εκκίνηση της σελίδας
+        loadOrders();
+
+        // Ανανέωση της λίστας παραγγελιών κάθε 30 δευτερόλεπτα
+        setInterval(loadOrders, 30000);
+    </script>
+</body>
+</html>

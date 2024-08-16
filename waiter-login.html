@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Είσοδος Σερβιτόρου</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        h1 {
+            text-align: center;
+        }
+        label, input, button {
+            margin: 10px 0;
+        }
+        input, button {
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <form id="loginForm">
+        <h1>Είσοδος Σερβιτόρου</h1>
+        <label for="waiterName">Όνομα Σερβιτόρου:</label>
+        <input type="text" id="waiterName" required>
+        <button type="submit">Είσοδος</button>
+    </form>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            login();
+        });
+
+        function login() {
+            const waiterName = document.getElementById('waiterName').value.trim();
+            if (waiterName) {
+                localStorage.setItem('currentWaiter', waiterName);
+                window.location.href = 'waiter.html';
+            } else {
+                alert('Παρακαλώ εισάγετε το όνομά σας.');
+            }
+        }
+    </script>
+</body>
+</html>

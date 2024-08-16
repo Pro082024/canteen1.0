@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Εφαρμογή Παραγγελιών</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<!-- Κεφαλίδα με λογότυπο -->
+        <header>
+            <img src="image/logo2.png" alt="Λογότυπο Καφετέριας" id="logo">
+        </header>
+
+    <div class="container">
+        <h1>Εφαρμογή Παραγγελιών</h1>
+        <button onclick="goToKitchen()">Κουζίνα</button>
+        <button onclick="goToWaiter()">Σερβιτόρος</button>
+    </div>
+
+    <script>
+        function goToKitchen() {
+            window.location.href = 'kitchen-options.html';
+        }
+
+        function goToWaiter() {
+            window.location.href = 'waiter-login.html';
+        }
+    </script>
+</body>
+</html>

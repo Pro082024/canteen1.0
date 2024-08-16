@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Παραγγελία Καφέ</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Κεφαλίδα με λογότυπο -->
+        <button id="logoutButton" onclick="logout()">Αποσύνδεση</button>
+		<header>
+			<img src="image/logo2.png" alt="Λογότυπο Καφετέριας" id="logo">
+			<h1>Καντίνα Ξέρρες</h1>
+        </header>
+		
+		<p id="waiterInfo"><span id="waiterLabel">Σερβιτόρος: </span><span id="waiterName"></span></p>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const currentWaiter = localStorage.getItem('currentWaiter');
+    if (!currentWaiter) {
+        window.location.href = 'waiter-login.html';
+    } else {
+        const waiterNameElement = document.getElementById('waiterName');
+        if (waiterNameElement) {
+            waiterNameElement.textContent = currentWaiter;
+        } else {
+            console.error('Το στοιχείο με id "waiterName" δεν βρέθηκε.');
+        }
+    }
+});
+</script>
+
+
+	   
+	   
+        <!-- Φόρμα πληροφοριών πελάτη -->
+        <form id="customerInfo" aria-labelledby="customerInfoTitle">
+		<h2 id="customerInfoTitle">Πληροφορίες Πελάτη</h2>
+	
+	<div class="form-group">
+        <label for="customerName">Ομπρέλα / Όνομα Πελάτη:</label>
+        <input type="text" id="customerName" required aria-required="true" minlength="2">
+        <span id="customerNameError" class="error" aria-live="polite"></span>
+    </div>
+    <button type="submit" aria-label="Έναρξη νέας παραγγελίας">Έναρξη Παραγγελίας</button>
+</form>
+
+        <!-- Κατηγορίες μενού -->
+        <div id="menuCategories" style="display: none;">
+            <h2>Κατηγορίες Μενού</h2>
+            <ul id="categoryList"></ul>
+        </div>
+
+        <!-- Στοιχεία μενού -->
+        <div id="menuItems" style="display: none;">
+            <h2 id="categoryTitle"></h2>
+			<div id="searchContainer">
+				<input type="text" id="searchInput" placeholder="Αναζήτηση προϊόντος...">
+				<button id="searchButton">Αναζήτηση</button>
+			</div>
+            <ul id="itemsList"></ul>
+            <button id="backButton">Πίσω στις Κατηγορίες</button>
+        </div>
+
+        <!-- Τρέχουσα παραγγελία -->
+        <div id="order" style="display: none;">
+		<h2>Η Παραγγελία σας</h2>
+		<p>Πελάτης/Ομπρέλα: <span id="orderCustomer"></span></p>
+		<ul id="orderList"></ul>
+		<p>Σύνολο: €<span id="total">0.00</span></p>
+		<div id="paymentOptions">
+			<p>Τρόπος Πληρωμής:</p>
+			<label>
+				<input type="radio" name="paymentMethod" value="cash" checked> Μετρητά
+			</label>
+			<label>
+				<input type="radio" name="paymentMethod" value="card"> Κάρτα
+			</label>
+		</div>
+
+		<div>
+			<label for="orderComment">Σημείωση:</label>
+			<textarea id="orderComment" rows="3" placeholder="π.χ., Παρακαλώ φέρτε την παραγγελία στην ομπρέλα νούμερο 5"></textarea>
+		</div>
+		<button id="placeOrderButton">Ολοκλήρωση Παραγγελίας</button>
+		<button id="clearOrderButton">Ακύρωση Παραγγελίας</button>
+		</div>
+    </div>
+
+    <!-- Modal για προσθήκη προϊόντος στο καλάθι -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalProductName"></h2>
+            <div id="modalOptions"></div>
+        <div class="quantity-control"> <!-- Στοιχεία άυξης μύωσης ποσότητας -->
+			<button class="quantity-btn minus" aria-label="Μείωση ποσότητας">-</button>
+			<input type="number" id="modalQuantity" min="1" value="1">
+			<button class="quantity-btn plus" aria-label="Αύξηση ποσότητας">+</button>
+		</div>
+            <div>
+                <label for="modalComment">Σημείωση:</label>
+                <input type="text" id="modalComment" placeholder="π.χ., Χωρίς ζάχαρη">
+            </div>
+            <button id="modalAddToCart">Προσθήκη στο Καλάθι</button>
+        </div>
+    </div>
+
+    <!-- Περιοχή εκτύπωσης -->
+    <div id="printArea" style="display: none;"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
